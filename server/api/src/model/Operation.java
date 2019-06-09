@@ -4,11 +4,12 @@ public class Operation {
 	private Integer firstNumber;
 	private Integer secondNumber;
 	private String operator;
+	private boolean dividingByZero = false;
 	
 	public Operation(Integer firstNumber, Integer secondNumber, String operator) {
-		this.firstNumber = firstNumber;
-		this.secondNumber = secondNumber;
-		this.operator = operator;
+		this.setFirstNumber(firstNumber);
+		this.setSecondNumber(secondNumber);
+		this.setOperator(operator);
 	}
 	
 	public Operation() {
@@ -30,10 +31,12 @@ public class Operation {
 		return operator;
 	}
 	public void setOperator(String operator) {
-		if(operator.equals("+") || operator.equals("-") || operator.equals("*") || operator.equals("/"))
+		if((operator != null) && (operator.equals("+") || operator.equals("-") || operator.equals("*") || operator.equals("/"))) {
 			this.operator = operator;
-		else
+		}
+		else {
 			this.operator = null;
+		}
 	}
 	
 	public Double getResult() {
@@ -52,6 +55,8 @@ public class Operation {
 				case "/":
 					if (getSecondNumber() != 0)
 						result = new Double(getFirstNumber()) / new Double(getSecondNumber());
+					else
+						dividingByZero = true;
 					break;
 				default:
 					result = null;
@@ -65,15 +70,24 @@ public class Operation {
 	}
 	
 	public String getError() {
-		String error = null;
+		String errorRes = null;
 		
-		if(!isComplete()) {
-			error = "Missing value(s).There should be a firstNumber, a secondNumber and a valid operator (+,-,*,/)";
-		}else if (getResult() == null) {
-			error = "Trying to divide by 0!"; //result can only be null if is trying to divide by 0 if is complete
+		if(!isComplete() || getResult() == null) {
+			errorRes = "Error found:\n";
+			if(getFirstNumber() == null) {
+				errorRes = String.format("%s - Valid firstNumber missing.\n", errorRes);
+			}
+			if(getSecondNumber() == null) {
+				errorRes = String.format("%s - Valid secondNumber missing.\n", errorRes);
+			}
+			if(getOperator() == null) {
+				errorRes = String.format("%s - Valid operator (+,-,*,/) missing.\n", errorRes);
+			}
+			if(dividingByZero) {
+				errorRes = String.format("%s - Trying to divide by 0!\n", errorRes);
+			}
 		}
-		
-		return error;
+		return errorRes;
 	}
 	
 	public String toString() {

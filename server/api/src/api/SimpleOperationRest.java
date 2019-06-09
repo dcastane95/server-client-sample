@@ -30,16 +30,16 @@ public class SimpleOperationRest {
 			operation = jsonb.fromJson(json,Operation.class);
 		}catch(Exception e) {
 			//if JSON received is not correct returns bad request
-			return Response.status(400).build();
+			return badRequest();
 		}
 		
 		if(operation == null) {
-			response =Response.status(400).build(); //returns just bad request
+			response = badRequest(); //returns just bad request
 		}else {
 			jsonResponse = jsonb.toJson(operation);
 			
 			if(operation.getError() != null) {
-				//returns bad request and the json (with info about if is complete or and error)
+				//returns bad request and the json (with info about errors)
 				response = Response.status(400).entity(jsonResponse).type(MediaType.APPLICATION_JSON).build();
 			}else {
 				//returns json with values
@@ -49,4 +49,8 @@ public class SimpleOperationRest {
 		
 		return response;
 	 }
+
+	private Response badRequest() {
+		return Response.status(400).entity("{\"error\": \"expected json with a firstNumber (int), secondNumber (int) and operator (+-*/)\"}").type(MediaType.APPLICATION_JSON).build();
+	}
 }
